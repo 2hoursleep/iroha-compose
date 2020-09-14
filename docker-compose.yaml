@@ -1,0 +1,47 @@
+version: '3.5'
+
+services:
+  iroha:
+    image: soramitsu/iroha:x86_64-master_with_burrow
+    container_name: iroha-node
+    depends_on:
+      - iroha-postgres
+    restart: on-failure
+    tty: true
+    environment:
+      - KEY=keys/node0
+      - IROHA_POSTGRES_HOST=localhost
+      - IROHA_POSTGRES_PORT=5432
+      - IROHA_POSTGRES_USER=postgres
+      - IROHA_POSTGRES_PASSWORD=mysecretpassword
+    entrypoint:
+      - /opt/iroha_data/entrypoint.sh
+    network_mode: host
+    volumes:
+      - ./iroha:/opt/iroha_data
+      - iroha_block_store:/tmp/block_store
+    ports:
+      - 50051:50051
+      - 10001:10001
+    #logging:
+    #   driver: none
+
+  iroha-postgres:
+    image: postgres:latest
+    container_name: iroha-postgres
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=postgres
+    network_mode: host
+    command: -c 'max_prepared_transactions=100'
+    volumes: 
+      - iroha_wsv_store:/var/lib/postgresql/data
+    ports:
+     - 5432:5432
+    logging:
+      driver: none
+
+volumes:
+  iroha_block_store:
+  iroha_wsv_store:
