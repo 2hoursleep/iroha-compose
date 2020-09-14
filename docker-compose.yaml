@@ -35,7 +35,7 @@ services:
       - POSTGRES_USER=postgres
     network_mode: host
     command: -c 'max_prepared_transactions=100'
-    volumes: 
+    volumes:
       - iroha_wsv_store:/var/lib/postgresql/data
     ports:
      - 5432:5432
